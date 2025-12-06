@@ -1,4 +1,5 @@
 from sqlmodel import SQLModel, Field
+from sqlalchemy import Column, Integer
 from typing import Optional, List
 from datetime import datetime
 
@@ -18,7 +19,7 @@ class RegistrationFeeDefinition(SQLModel, table=True):
 class StampFeeTierDefinition(SQLModel, table=True):
     __tablename__ = "stamp_fee_tier_definitions"
     
-    id: int = Field(primary_key=True, autoincrement=True)
+    id: Optional[int] = Field(default=None, primary_key=True, sa_column=Column(Integer, autoincrement=True))
     transaction_type: str = Field(description="Transaction type (e.g., 'Sale', 'Gift', 'Transfer', 'Exchange', 'Lease', 'Mortgage', 'Default')")
     min_amount: float = Field(description="Minimum amount in ETH (inclusive)")
     max_amount: Optional[float] = Field(default=None, description="Maximum amount in ETH (exclusive, None means Infinity)")
