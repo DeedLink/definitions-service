@@ -4,18 +4,34 @@ import os
 
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
-    raise ValueError("DATABASE_URL environment variable is not set. Please set it in your .env file or environment.")
 
-# Use connection pooling for serverless environments
-# pool_pre_ping ensures connections are valid before use
-engine = create_engine(
-    DATABASE_URL, 
-    echo=False,  # Disable echo in production
-    pool_pre_ping=True,  # Verify connections before using
-    pool_size=5,
-    max_overflow=10
-)
+if DATABASE_URL:
+    engine = create_engine(
+        DATABASE_URL, 
+        echo=False,
+        pool_pre_ping=True,
+        pool_size=1,
+        max_overflow=0,
+        connect_args={"connect_timeout": 10}
+    )
+else:
+    engine = None
+
+_tables_created = False
 
 def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+    global _tables_created, engine
+    
+    if not DATABASE_URL:
+        raise ValueError("DATABASE_URL environment variable is not set. Please set it in Vercel environment variables.")
+    
+    if engine is None:
+        raise ValueError("Database engine not initialized. DATABASE_URL is required.")
+    
+    if not _tables_created:
+        try:
+            SQLModel.metadata.create_all(engine)
+            _tables_created = True
+        except Exception as e:
+            print(f"Warning: Could not create tables: {e}")
+            _tables_created = True
