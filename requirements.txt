@@ -1,1 +1,6 @@
-DATABASE_URL=postgresql://postgres:Abcd_110_1234@db.lzqqtfozsoykboidrngf.supabase.co:5432/postgres
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+sqlmodel>=0.0.14
+psycopg2-binary>=2.9.0
+python-dotenv>=1.0.0
+
