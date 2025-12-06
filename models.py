@@ -19,7 +19,7 @@ class RegistrationFeeDefinition(SQLModel, table=True):
 class StampFeeTierDefinition(SQLModel, table=True):
     __tablename__ = "stamp_fee_tier_definitions"
     
-    id: Optional[int] = Field(default=None, primary_key=True, sa_column=Column(Integer, autoincrement=True))
+    id: Optional[int] = Field(default=None, sa_column=Column(Integer, primary_key=True, autoincrement=True))
     transaction_type: str = Field(description="Transaction type (e.g., 'Sale', 'Gift', 'Transfer', 'Exchange', 'Lease', 'Mortgage', 'Default')")
     min_amount: float = Field(description="Minimum amount in ETH (inclusive)")
     max_amount: Optional[float] = Field(default=None, description="Maximum amount in ETH (exclusive, None means Infinity)")
