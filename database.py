@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, create_engine
+from sqlmodel import SQLModel, create_engine, Session, select
 from dotenv import load_dotenv
 import os
 
@@ -18,6 +18,7 @@ else:
     engine = None
 
 _tables_created = False
+_default_record_created = False
 
 def create_db_and_tables():
     global _tables_created, engine
@@ -35,3 +36,29 @@ def create_db_and_tables():
         except Exception as e:
             print(f"Warning: Could not create tables: {e}")
             _tables_created = True
+
+def create_default_record_if_empty():
+    global _default_record_created, engine
+    
+    if not _tables_created or engine is None:
+        return
+    
+    if _default_record_created:
+        return
+    
+    try:
+        with Session(engine) as session:
+            from models import PaymentRule
+            existing = session.exec(select(PaymentRule)).first()
+            if existing is None:
+                default_rule = PaymentRule(
+                    id="default",
+                    type="percentage",
+                    value=10.0
+                )
+                session.add(default_rule)
+                session.commit()
+        _default_record_created = True
+    except Exception as e:
+        print(f"Warning: Could not create default record: {e}")
+        _default_record_created = True

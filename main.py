@@ -1,12 +1,13 @@
 from fastapi import FastAPI, HTTPException, Depends
 from sqlmodel import Session, select
 from models import PaymentRule, PaymentRuleCreate, PaymentRuleUpdate
-from database import engine, create_db_and_tables
+from database import engine, create_db_and_tables, create_default_record_if_empty
 
 app = FastAPI(title="Payment Rules CRUD API")
 
 def get_session():
     create_db_and_tables()
+    create_default_record_if_empty()
     session = Session(engine)
     try:
         yield session
